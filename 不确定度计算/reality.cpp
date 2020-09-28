@@ -7,6 +7,7 @@ reality::reality(const long effective_digits1, const long double real1)
 {
 	real = real1;
 	effective_digits = effective_digits1;
+	recalculate_real();
 }
 
 reality::reality(const reality& node)
@@ -18,28 +19,28 @@ reality::reality(const reality& node)
 long reality::get_effective_digits_natural() const
 {
 	char temp[20];
-	snprintf(temp, 20, "%19lf", real);
-	int i, j;
-	for (i = 0, j = 0; i < 20; i++)
+	snprintf(temp, 20, "%.12lf", real + 1e-10);
+	int i, j, k = -1;
+	for (i = 0, j = 0; i < 20 && temp[i] != '\0'; i++)
 	{
 		if (temp[i] == '.')
 		{
 			j = i;
 			continue;
 		}
-		if (temp[i] != '.' && temp[i] != '0')
+		if (k == -1 && temp[i] != '.' && temp[i] != '0')
 		{
-			break;
+			k = i;
 		}
 	}
-	return j - i - effective_digits + 1;
+	return effective_digits > 0 ? j - k - effective_digits + 1 : j - k - effective_digits;
 }
 
 bool reality::recalculate_real()
 {
-	long off = -effective_digits + 1;
-	long double temp = real * pow(long double(10), off);
-	long temp1 = long(temp + 1e-10);
+	long off = effective_digits > 0 ? 2-effective_digits : 1 - effective_digits;
+	long double temp = real * pow(long double(10), off)+1e-10;
+	long temp1 = long(temp);
 	long last_digit = temp1 % 10;
 	temp1 -= last_digit;
 	if (last_digit < 5)
@@ -56,7 +57,7 @@ bool reality::recalculate_real()
 			temp1 += 10;
 		}
 	}
-	real = temp1 * pow(long double(10), -off);
+	real = temp1 * pow(long double(10), -off)+1e-10;
 	return true;
 }
 
@@ -140,7 +141,7 @@ reality reality::operator/(const reality& node)const
 
 reality reality::operator^(const long index)const
 {
-	reality temp = reality(get_effective_digits_inside(), pow(real, index));
+	reality temp = reality(get_effective_digits_inside(), pow(real, index)+1e-10);
 	long this_effective_digits_natural = get_effective_digits_natural();
 	temp.set_effective_digits_natural(this_effective_digits_natural);
 	return temp;
@@ -148,7 +149,7 @@ reality reality::operator^(const long index)const
 
 bool reality::operator==(const reality& node)const
 {
-	if (effective_digits == node.effective_digits && abs(real - node.real) <= 1e-10)
+	if (effective_digits == node.effective_digits && abs(real - node.real) <= 1e-8)
 	{
 		return true;
 	}
@@ -157,3 +158,4 @@ bool reality::operator==(const reality& node)const
 		return false;
 	}
 }
+

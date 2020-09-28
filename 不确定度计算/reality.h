@@ -9,7 +9,7 @@ public:
 	reality(const long effective_digits1 = LDBL_DIG, const long double real1 = 0);
 	reality(const reality& node);
 	bool set_effective_digits_natural(const long ed);		//输入为自然语义
-	inline bool set_effective_digits_inside(const long ed) { effective_digits = ed; recalculate_real(); }		//输入为程序内部语义
+	inline void set_effective_digits_inside(const long ed) { effective_digits = ed; recalculate_real(); }		//输入为程序内部语义
 	inline long get_effective_digits_inside() const { return effective_digits; }		//返回程序内部语义的有效位数
 	inline long double get_real() const { return real; }
 	long get_effective_digits_natural() const;		//返回自然语义有效位数

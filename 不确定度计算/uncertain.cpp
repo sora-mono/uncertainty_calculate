@@ -17,7 +17,7 @@ uncertain::uncertain(const long uncertain_fin1, const  long uncertain_fin_digits
 	{
 		if (!uncertain_calculate())
 		{
-			cout << "不确定度初步计算出错，请检查输入数值" << endl;
+			cout << "不确定度计算出错，请检查输入数值" << endl;
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -37,18 +37,14 @@ bool uncertain::uncertain_calculate()
 	if (uncertain_measurement != -1 && uncertain_instrument != -1)
 	{
 		uncertain_calculated = sqrt(uncertain_measurement * uncertain_measurement + uncertain_instrument * uncertain_instrument / 3);
-		return true;
 		uncertain_measurement = uncertain_instrument = -1;
-	}
-	else
-	{
-		return false;
 	}
 	if (!uncertain_calculated_cut())
 	{
 		cout << "不确定度近似过程出错，请检查输入数据" << endl;
 		exit(EXIT_FAILURE);
 	}
+	else return true;
 }
 
 bool uncertain::uncertain_calculated_cut()
@@ -108,7 +104,7 @@ bool uncertain::recalculate_uncertain(const long digit)
 
 uncertain uncertain::operator*(const long double k)const
 {
-	return uncertain(-1, -1, k * uncertain_fin * pow(10, uncertain_fin_digits));
+	return uncertain(-1, -1, k * uncertain_fin * pow(10, uncertain_fin_digits)+1e-10);
 }
 
 uncertain operator*(const long double k, const uncertain& node)
@@ -118,7 +114,7 @@ uncertain operator*(const long double k, const uncertain& node)
 
 bool uncertain::operator==(const uncertain& node)const
 {
-	if (uncertain_fin_digits == node.uncertain_fin_digits &&abs(uncertain_fin-node.uncertain_fin)<=1e-10)
+	if (uncertain_fin_digits == node.uncertain_fin_digits &&abs(uncertain_fin-node.uncertain_fin)<=1e-8)
 	{
 		return true;
 	}

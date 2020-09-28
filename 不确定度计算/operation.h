@@ -1,6 +1,9 @@
 #pragma once
 #include "reality.h"
 #include "uncertain.h"
+
+using std::ostream;
+
 class operation
 {
 private:
@@ -21,5 +24,6 @@ public:
 	friend operation operator*(const long double k, const operation& node);
 	friend operation ln(const operation& node);
 	friend operation sin(const operation& node);
+	friend ostream& operator<<(ostream& out, operation & node);
 };
 
