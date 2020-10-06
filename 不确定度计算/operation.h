@@ -24,6 +24,7 @@ public:
 	friend operation operator*(const long double k, const operation& node);
 	friend operation ln(const operation& node);
 	friend operation sin(const operation& node);
-	friend ostream& operator<<(ostream& out, operation & node);
+	friend operation operator^(const long double k, const operation& node);
+	friend ostream& operator<<(ostream& out, const operation & node);
 };
 

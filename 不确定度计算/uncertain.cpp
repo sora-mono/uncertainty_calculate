@@ -73,7 +73,7 @@ bool uncertain::uncertain_calculated_cut()
 			digit++;
 		}
 	}
-	if (uncertain_calculated_temp - long(uncertain_calculated_temp) > 1e-10)
+	if (uncertain_calculated_temp - long(uncertain_calculated_temp) > 1e-8)
 	{
 		uncertain_calculated_temp++;
 		if (uncertain_calculated_temp >= 10)
@@ -82,7 +82,7 @@ bool uncertain::uncertain_calculated_cut()
 			uncertain_calculated_temp = 1;
 		}
 	}
-	uncertain_fin = long(uncertain_calculated_temp + 1e-10);
+	uncertain_fin = long(uncertain_calculated_temp);
 	uncertain_fin_digits = digit;
 	uncertain_calculated = -1;
 	return true;
@@ -104,7 +104,7 @@ bool uncertain::recalculate_uncertain(const long digit)
 
 uncertain uncertain::operator*(const long double k)const
 {
-	return uncertain(-1, -1, k * uncertain_fin * pow(10, uncertain_fin_digits)+1e-10);
+	return uncertain(-1, -1, k * uncertain_fin * pow(10, uncertain_fin_digits));
 }
 
 uncertain operator*(const long double k, const uncertain& node)
