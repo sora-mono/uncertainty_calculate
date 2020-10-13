@@ -1,5 +1,9 @@
 #pragma once
 #include"operation.h"
+#include<string>
+#include<vector>
+
+using namespace std;
 
 struct node
 {
@@ -17,14 +21,16 @@ long max(long a, long b);
 
 long min(long a, long b);
 
-long double average_calculate(long double arr[], int size);
+long double average_calculate(vector<long double>& vec);
 
-long double uncertain_measurement_calculate(long double arr[], long double avg, int size);
+long double uncertain_measurement_calculate(vector<long double>& vec);
 
-operation& input_set();
+operation*& get_object(char ch);
 
-operation& input_one();
-
-operation* get_object(char ch);
+node*& get_object_space(char ch);
 
 void delete_node(node* p);
+
+node* analysis_input();
+
+void get_uncertain_digits(long double uncertain, long& fin, long& fin_digits);

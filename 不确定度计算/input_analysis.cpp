@@ -1,8 +1,12 @@
 #include "input_analysis.h"
 #include"common.h"
 
+using std::cout;
+using std::endl;
+
 node* input_analysis::calculate_reserve_polish_expression()
 {
+	str_to_reserve_polish_expression();
 	stack<node*> st;
 	for (size_t i = 0; i < str.size(); i++)
 	{
@@ -19,6 +23,7 @@ node* input_analysis::calculate_reserve_polish_expression()
 				node* obj = new node;
 				obj->type = obj->DIGIT;
 				obj->digit = obj1->digit * obj2->digit;
+				cout << obj1->digit << '*' << obj2->digit << '=' << obj->digit << endl;
 				delete_node(obj1);
 				delete_node(obj2);
 				st.push(obj);
@@ -28,6 +33,7 @@ node* input_analysis::calculate_reserve_polish_expression()
 				node* obj = new node;
 				obj->type = obj->OPERATION;
 				obj->p = new operation(*obj1->p * *obj2->p);
+				cout << *obj1->p << '*' << *obj2->p << '=' << *obj->p << endl;
 				delete_node(obj1);
 				delete_node(obj2);
 				st.push(obj);
@@ -49,6 +55,7 @@ node* input_analysis::calculate_reserve_polish_expression()
 				node* obj = new node;
 				obj->type = obj->OPERATION;
 				obj->p = new operation(*p * digit);
+				cout << digit << '*' << *p << '=' << *obj->p << endl;
 				st.push(obj);
 			}
 			break;
@@ -62,6 +69,7 @@ node* input_analysis::calculate_reserve_polish_expression()
 			node* obj = new node;
 			obj->type = obj->OPERATION;
 			obj->p = new operation(*obj2->p - *obj1->p);
+			cout << *obj2->p << '-' << *obj1->p << '=' << *obj->p << endl;
 			delete_node(obj1);
 			delete_node(obj2);
 			st.push(obj);
@@ -76,6 +84,7 @@ node* input_analysis::calculate_reserve_polish_expression()
 			node* obj = new node;
 			obj->type = obj->OPERATION;
 			obj->p = new operation(*obj2->p + *obj1->p);
+			cout << *obj2->p << '+' << *obj1->p << '=' << *obj->p << endl;
 			delete_node(obj1);
 			delete_node(obj2);
 			st.push(obj);
@@ -90,6 +99,7 @@ node* input_analysis::calculate_reserve_polish_expression()
 			node* obj = new node;
 			obj->type = obj->OPERATION;
 			obj->p = new operation(*obj2->p / *obj1->p);
+			cout << *obj2->p << '-' << *obj1->p << '=' << *obj->p << endl;
 			delete_node(obj1);
 			delete_node(obj2);
 			st.push(obj);
@@ -104,6 +114,7 @@ node* input_analysis::calculate_reserve_polish_expression()
 			node* obj = new node;
 			obj->type = obj->OPERATION;
 			obj->p = new operation(*obj2->p ^ obj1->digit);
+			cout << *obj2->p << '^' << obj1->digit << '=' << *obj->p << endl;
 			delete_node(obj1);
 			delete_node(obj2);
 			st.push(obj);
@@ -125,7 +136,8 @@ node* input_analysis::calculate_reserve_polish_expression()
 			break;
 		}
 	}
-	return st.top();
+	node* temp = st.top();
+	return temp;
 }
 
 bool input_analysis::str_to_reserve_polish_expression()

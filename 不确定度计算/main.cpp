@@ -1,27 +1,28 @@
 #include"operation.h"
 #include"common.h"
+#include<vector>
 
 using std::cout;
 using std::endl;
 using std::cin;
 
-extern node**p;
+extern node** variables;
+extern const long variables_size;
 
 int main()
 {
-	p = new node * [60];
-	cout << "由于技术力有限（懒得继续折腾），本程序在输入算式步骤仅能接受一位数字" << endl;
+	variables = new node * [variables_size];
+	cout << "由于技术力有限（懒得继续折腾），本程序在输入算式步骤仅能接受一位数字，可用的标识符为26个字母大小写" << endl;
+	for (int i = 0; i < variables_size; i++)
+	{
+		variables[i] = nullptr;
+	}
 	while (true)
 	{
-		operation& x = input_one();
-		operation& y = input_one();
-		cout << "x + y = \n" << x + y;
-		cout << "x-y = \n" << x - y;
-		cout << "x*y = \n" << x * y;
-		cout << "x/y = \n" << x / y;
-		cout << "3*y = \n" << 3 * y;
-		cout << "x^1/3 = \n" << (x ^ (long double(1) / 3));
-		cout << "lnx = \n" << ln(x);
-		cout << "siny = \n" << sin(y);
+		node*p = analysis_input();
+		if (p->type!=p->OPERATION_NODELETE)
+		{
+			delete p;
+		}
 	}
 }

@@ -95,12 +95,12 @@ reality reality::operator+(const reality& node) const
 	long node_effective_digits_inside = node.get_effective_digits_inside();
 	if (this_effective_digits_inside == node_effective_digits_inside)
 	{
-		return reality(this_effective_digits_inside, real + node.real);
+		return reality(-99, real + node.real);
 	}
 	else
 	{
-		reality temp = reality(max(this_effective_digits_inside, node_effective_digits_inside), real + node.real);
-		temp.recalculate_real();
+		reality temp = reality(-99, real + node.real);
+		//temp.recalculate_real();
 		return temp;
 	}
 }
@@ -111,12 +111,12 @@ reality reality::operator-(const reality& node) const
 	long node_effective_digits_inside = node.get_effective_digits_inside();
 	if (this_effective_digits_inside == node_effective_digits_inside)
 	{
-		return reality(this_effective_digits_inside, real - node.real);
+		return reality(-99, real - node.real);
 	}
 	else
 	{
-		reality temp = reality(max(this_effective_digits_inside, node_effective_digits_inside), real - node.real);
-		temp.recalculate_real();
+		reality temp = reality(-99, real - node.real);
+		//temp.recalculate_real();
 		return temp;
 	}
 }
@@ -126,7 +126,7 @@ reality reality::operator*(const reality& node)const
 	long this_effective_digits_natural = get_effective_digits_natural();
 	long node_effective_digits_natural = node.get_effective_digits_natural();
 	reality temp = reality(-99, real * node.real);
-	temp.set_effective_digits_natural(min(this_effective_digits_natural, node_effective_digits_natural));
+	//temp.set_effective_digits_natural(min(this_effective_digits_natural, node_effective_digits_natural));
 	return temp;
 }
 
@@ -135,15 +135,15 @@ reality reality::operator/(const reality& node)const
 	long this_effective_digits_natural = get_effective_digits_natural();
 	long node_effective_digits_natural = node.get_effective_digits_natural();
 	reality temp = reality(-99, real / node.real);
-	temp.set_effective_digits_natural(min(this_effective_digits_natural, node_effective_digits_natural));
+	//temp.set_effective_digits_natural(min(this_effective_digits_natural, node_effective_digits_natural));
 	return temp;
 }
 
 reality reality::operator^(const long index)const
 {
 	reality temp = reality(get_effective_digits_inside(), pow(real, index));
-	long this_effective_digits_natural = get_effective_digits_natural();
-	temp.set_effective_digits_natural(this_effective_digits_natural);
+	//long this_effective_digits_natural = get_effective_digits_natural();
+	//temp.set_effective_digits_natural(this_effective_digits_natural);
 	return temp;
 }
 
