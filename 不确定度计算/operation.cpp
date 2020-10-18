@@ -138,8 +138,7 @@ operation operator^(const long double k, const operation& node)
 ostream& operator<<(ostream& out, const operation& node)
 {
 	using std::endl;
-	out << setprecision(node.realpart.get_effective_digits_natural());
 	out << "真实值 = " << node.realpart.get_real() << "\t有效位数 = " << node.realpart.get_effective_digits_natural();
-	out << "不确定度 = " << node.uncertainpart.get_uncertain_fin() * pow(10, node.uncertainpart.get_uncertain_fin_digits_for_pow()) << endl;
+	out << "\t不确定度 = " << node.uncertainpart.get_uncertain_fin() * pow(10, node.uncertainpart.get_uncertain_fin_digits_for_pow()) << endl;
 	return out;
 }

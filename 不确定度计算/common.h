@@ -9,12 +9,9 @@ struct node
 {
 	int type;
 	enum { OPERATOR, DIGIT, OPERATION, OPERATION_NODELETE };
-	union
-	{
-		char op;
-		int digit;
-		operation* p;
-	};
+	string remark;
+	long double digit;
+	operation* p = nullptr;
 };
 
 long max(long a, long b);
@@ -29,8 +26,12 @@ operation*& get_object(char ch);
 
 node*& get_object_space(char ch);
 
-void delete_node(node* p);
+void delete_node(node*& p);
+
+void help();
 
 node* analysis_input();
 
 void get_uncertain_digits(long double uncertain, long& fin, long& fin_digits);
+
+void clear_object_space();
