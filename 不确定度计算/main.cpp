@@ -1,10 +1,9 @@
 #include"operation.h"
 #include"common.h"
 #include<vector>
+#include<csetjmp>
 
-using std::cout;
-using std::endl;
-using std::cin;
+using namespace std;
 
 extern node** variables;
 extern const long variables_size;
@@ -19,7 +18,7 @@ int main()
 	while (true)
 	{
 		node* p = analysis_input();
-		if (p != nullptr && p->type != p->OPERATION_NODELETE)
+		if (p != nullptr && p->type != p->OPERATION_NODELETE&&p->type!=p->DIGIT_NODELETE)
 		{
 			delete p;
 		}

@@ -82,12 +82,12 @@ void help()
 	//cout << "输入show以显示所有已储存变量" << endl;
 	cout << "*由于技术力有限（懒得继续折腾还不会用stl的哈希表），本程序可用的标识符为26个字母大小写" << endl;
 	cout << "*如果为赋值请输入如下形式（空格和制表符不影响输入）：" << endl;
-	cout << " A,-2 = 33.23+35.56+34.52|0.05 " << endl;
-	cout << " A,-2 = 33.42|0.01 " << endl;
-	cout << "*前者逗号后为精确程度，|后为仪器不确定度，等于号后为已有值" << endl;
-	cout << "*后者逗号后为精确程度，|左右两侧为真实值和不确定度" << endl;
+	cout << " A = 33.23+35.56+34.52|0.05 " << endl;
+	cout << " A = 33.42|0.01 " << endl;
+	cout << "*前者|左侧为测量数据，右侧为仪器不确定度" << endl;
+	cout << "*后者|左侧为真实值，右侧为不确定度" << endl;
 	cout << "*如果为计算请输入以下形式：A*B+C/D*k，前面可加\"A = \"字样" << endl;
-	cout << "!!!警告，本程序不支持两个非不确定量进行乘法以外的运算" << endl;
+	cout << "!!!警告，本程序暂不支持两个非不确定量进行乘法以外的运算" << endl;
 	cout << endl << "\t\t\t\t\t\t\t\t\t\t\t——sora_mono" << endl;
 	cout << endl;
 }
@@ -108,6 +108,11 @@ node* analysis_input()
 		clear_object_space();
 		return nullptr;
 	}
+	//if (str == "show")
+	//{
+	//	show();
+	//	return nullptr;
+	//}
 	size_t index;
 	while ((index = str.find(' ')) != string::npos)		//去除空格
 	{
@@ -117,25 +122,67 @@ node* analysis_input()
 	{
 		str.replace(index, 1, "");
 	}
-	if (index = str.find('|') == string::npos)//没有'|'，是计算式
+	if (index = str.find('|') == string::npos)//没有'|'
 	{
 		if (index = str.find('=') != string::npos)//有赋值操作
 		{
-			int index_temp = 0;
-			string str_temp = str.substr(index + 1);
-			input_analysis analysis_obj(str_temp);
-			p = analysis_obj.calculate_reserve_polish_expression();
-			p->type = p->OPERATION_NODELETE;
-			p->remark = str[0];
-			delete_node(get_object_space(str[0]));
-			get_object_space(str[0]) = p;	//给对应存储位置赋值
-			cout << str[0] << " : " << *p->p << endl;
+			bool is_operation = false;
+			for (size_t i = 0; i < str.length(); i++)	//判断是否出现运算符，以确定为赋值语句还是表达式
+			{
+				switch (str[i])
+				{
+				case'+':
+				case'-':
+				case'*':
+				case'/':
+				case'^':is_operation = true;
+				default:
+					break;
+				}
+			}
+			if (is_operation)
+			{
+				int index_temp = 0;
+				string str_temp = str.substr(index + 1);
+				input_analysis analysis_obj(str_temp);
+				p = analysis_obj.calculate_reserve_polish_expression();
+				p->remark = str[0];
+				delete_node(get_object_space(str[0]));
+				get_object_space(str[0]) = p;	//给对应存储位置赋值
+				cout << str[0] << " : ";
+				if (p->type == p->DIGIT||p->type == p->DIGIT_NODELETE)
+				{
+					cout << p->digit << endl;
+				}
+				else
+				{
+					cout <<endl<< *p->p << endl;
+				}
+			}
+			else
+			{
+				p = new node;
+				p->type = p->DIGIT_NODELETE;
+				char c;
+				sscanf_s(str.c_str(), "%c=%lf", &c,1, &p->digit);
+				p->remark = c;
+				get_object_space(c) = p;
+				cout << c << " : " << p->digit << endl;
+			}
 		}
 		else	//没有赋值操作
 		{
-			input_analysis analysis_obj(str);
-			p = analysis_obj.calculate_reserve_polish_expression();
-			cout << "结果：" << *p->p << endl;
+				input_analysis analysis_obj(str);
+				p = analysis_obj.calculate_reserve_polish_expression();
+				cout << "结果：";
+				if (p->type == p->DIGIT || p->type == p->DIGIT_NODELETE)
+				{
+					cout << p->digit << endl;
+				}
+				else
+				{
+					cout <<endl<< *p->p << endl;
+				}
 		}
 	}
 	else	//有'|'，是赋值式
@@ -145,8 +192,9 @@ node* analysis_input()
 			char c;
 			long effective_digits, fin_digits, fin;
 			long double real, uncertain;
-			sscanf_s(str.c_str(), "%c,%ld=%lf|%lf", &c, 1, &effective_digits, &real, &uncertain);
+			sscanf_s(str.c_str(), "%c=%lf|%lf", &c, 1, &real, &uncertain);
 			get_uncertain_digits(uncertain, fin, fin_digits);
+			effective_digits = fin_digits;
 			p = new node;
 			p->type = p->OPERATION_NODELETE;
 			p->p = new operation(real, effective_digits, fin, fin_digits);
@@ -158,9 +206,9 @@ node* analysis_input()
 		else	//给一串数字计算不确定度
 		{
 			char c;
-			long effective_digits;
-			long double temp_long_double, uncertain_measurement, uncertain_instrument, real;
-			sscanf_s(str.c_str(), "%c,%ld", &c, 1, &effective_digits);
+			long effective_digits,fin;
+			long double temp_long_double, uncertain_measurement_calculated, uncertain_instrument, real;
+			c = str[0];
 			sscanf_s(str.c_str(), "%*[^|]|%lf", &uncertain_instrument);
 			string str_format = "";
 			vector<long double> vec;
@@ -172,10 +220,11 @@ node* analysis_input()
 				vec.push_back(temp_long_double);
 			} while ((index = str.find('+', index)) != string::npos);
 			real = average_calculate(vec);
-			uncertain_measurement = uncertain_measurement_calculate(vec);
+			uncertain_measurement_calculated = uncertain_measurement_calculate(vec);
+			get_uncertain_digits(uncertain_instrument, fin, effective_digits);	//获取精确度
 			p = new node;
 			p->type = p->OPERATION_NODELETE;
-			p->p = new operation(real, effective_digits, uncertain_instrument, uncertain_measurement);
+			p->p = new operation(real, effective_digits, uncertain_instrument, uncertain_measurement_calculated);
 			p->remark = str[0];
 			delete_node(get_object_space(c));
 			get_object_space(c) = p;

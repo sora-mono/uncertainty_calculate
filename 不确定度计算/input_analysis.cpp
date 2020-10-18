@@ -16,31 +16,20 @@ node* input_analysis::calculate_reserve_polish_expression()
 		case'\t':continue; break;
 		case'*':
 		{
+			node* obj = new node;
 			node* obj2 = st.top();
 			st.pop();
 			node* obj1 = st.top();
 			st.pop();
-			if (obj1->type == obj1->DIGIT && obj2->type == obj2->DIGIT)
+			if ((obj1->type == obj1->DIGIT||obj1->type == obj1->DIGIT_NODELETE) && (obj2->type == obj2->DIGIT||obj2->type == obj2->DIGIT_NODELETE))
 			{
-				node* obj = new node;
 				obj->type = obj->DIGIT;
 				obj->digit = obj1->digit * obj2->digit;
-				obj->remark = '(' + obj1->remark + ")*(" + obj2->remark + ')';
-				cout << obj->remark << " = " << obj->digit << endl;
-				delete_node(obj1);
-				delete_node(obj2);
-				st.push(obj);
 			}
 			else if ((obj1->type == obj1->OPERATION||obj1->type == obj1->OPERATION_NODELETE) && (obj2->type == obj2->OPERATION||obj2->type == obj2->OPERATION_NODELETE))
 			{
-				node* obj = new node;
 				obj->type = obj->OPERATION;
 				obj->p = new operation(*obj1->p * *obj2->p);
-				obj->remark = '(' + obj1->remark + ")*(" + obj2->remark + ')';
-				cout << obj->remark << " = " << *obj->p << endl;
-				delete_node(obj1);
-				delete_node(obj2);
-				st.push(obj);
 			}
 			else
 			{
@@ -56,13 +45,16 @@ node* input_analysis::calculate_reserve_polish_expression()
 					digit = obj2->digit;
 					p = obj1->p;
 				}
-				node* obj = new node;
 				obj->type = obj->OPERATION;
 				obj->p = new operation(*p * digit);
-				obj->remark = '(' + obj1->remark + ")*(" + obj2->remark + ')';
-				cout << obj->remark << " = " << *obj->p << endl;
-				st.push(obj);
 			}
+			obj->remark = '(' + obj1->remark + ")*(" + obj2->remark + ')';
+			cout << obj->remark << " = ";
+			obj->type == obj->DIGIT ? cout << obj->digit : cout << *obj->p;
+			cout << endl;
+			st.push(obj);
+			delete_node(obj1);
+			delete_node(obj2);
 			break;
 		}
 		case'-':
@@ -72,8 +64,22 @@ node* input_analysis::calculate_reserve_polish_expression()
 			node* obj1 = st.top();
 			st.pop();
 			node* obj = new node;
-			obj->type = obj->OPERATION;
-			obj->p = new operation(*obj1->p - *obj2->p);
+			if ((obj1->type == obj1->DIGIT || obj1->type == obj1->DIGIT_NODELETE) && (obj2->type == obj2->DIGIT || obj2->type == obj2->DIGIT_NODELETE))
+			{
+				obj->type = obj->DIGIT;
+				obj->digit = obj1->digit - obj2->digit;
+			}
+			else if (obj1->type+obj2->type<=obj1->DIGIT+obj1->OPERATION )//一个为纯数值，一个为不确定量，不能运算
+			{
+				cout << "类型错误！纯数值不能与不确定量运算" << endl;
+				//这里应有throw，但是还没学到，就先空着
+				exit(-1);
+			}
+			else
+			{
+				obj->type = obj->OPERATION;
+				obj->p = new operation(*obj1->p - *obj2->p);
+			}
 			obj->remark = '(' + obj1->remark + ")-(" + obj2->remark + ')';
 			cout << obj->remark << " = " << *obj->p << endl;
 			delete_node(obj1);
@@ -88,8 +94,22 @@ node* input_analysis::calculate_reserve_polish_expression()
 			node* obj1 = st.top();
 			st.pop();
 			node* obj = new node;
-			obj->type = obj->OPERATION;
-			obj->p = new operation(*obj1->p + *obj2->p);
+			if ((obj1->type == obj1->DIGIT || obj1->type == obj1->DIGIT_NODELETE) && (obj2->type == obj2->DIGIT || obj2->type == obj2->DIGIT_NODELETE))
+			{
+				obj->type = obj->DIGIT;
+				obj->digit = obj1->digit + obj2->digit;
+			}
+			else if (obj1->type + obj2->type <= obj1->DIGIT + obj1->OPERATION)//一个为纯数值，一个为不确定量，不能运算
+			{
+				cout << "类型错误！纯数值不能与不确定量运算" << endl;
+				//这里应有throw，但是还没学到，就先空着
+				exit(-1);
+			}
+			else
+			{
+				obj->type = obj->OPERATION;
+				obj->p = new operation(*obj1->p + *obj2->p);
+			}
 			obj->remark = '(' + obj1->remark + ")+(" + obj2->remark + ')';
 			cout << obj->remark << " = " << *obj->p << endl;
 			delete_node(obj1);
@@ -104,8 +124,22 @@ node* input_analysis::calculate_reserve_polish_expression()
 			node* obj1 = st.top();
 			st.pop();
 			node* obj = new node;
-			obj->type = obj->OPERATION;
-			obj->p = new operation(*obj1->p / *obj2->p);
+			if ((obj1->type == obj1->DIGIT || obj1->type == obj1->DIGIT_NODELETE) && (obj2->type == obj2->DIGIT || obj2->type == obj2->DIGIT_NODELETE))
+			{
+				obj->type = obj->DIGIT;
+				obj->digit = obj1->digit / obj2->digit;
+			}
+			else if (obj1->type + obj2->type <= obj1->DIGIT + obj1->OPERATION)//一个为纯数值，一个为不确定量，不能运算
+			{
+				cout << "类型错误！纯数值不能与不确定量运算" << endl;
+				//这里应有throw，但是还没学到，就先空着
+				exit(-1);
+			}
+			else
+			{
+				obj->type = obj->OPERATION;
+				obj->p = new operation(*obj1->p / *obj2->p);
+			}
 			obj->remark = '(' + obj1->remark + ")/(" + obj2->remark + ')';
 			cout << obj->remark << " = " << *obj->p << endl;
 			delete_node(obj1);
@@ -120,8 +154,16 @@ node* input_analysis::calculate_reserve_polish_expression()
 			node* obj1 = st.top();
 			st.pop();
 			node* obj = new node;
-			obj->type = obj->OPERATION;
-			obj->p = new operation(*obj1->p ^ obj2->digit);
+			if ((obj1->type == obj1->DIGIT || obj1->type == obj1->DIGIT_NODELETE) && (obj2->type == obj2->DIGIT || obj2->type == obj2->DIGIT_NODELETE))
+			{
+				obj->type = obj->DIGIT;
+				obj->digit = pow(obj1->digit , obj2->digit);
+			}
+			else
+			{
+				obj->type = obj->OPERATION;
+				obj->p = new operation(*obj1->p ^ obj2->digit);
+			}
 			obj->remark = '(' + obj1->remark + ")^(" + obj2->remark + ')';
 			cout << obj->remark << " = " << *obj->p << endl;
 			delete_node(obj1);
@@ -145,8 +187,11 @@ node* input_analysis::calculate_reserve_polish_expression()
 			}
 			else
 			{
-				p->p = get_object(str[i]);
-				p->type = p->OPERATION_NODELETE;
+				node* temp = get_object_space(str[i]);
+				p->p = temp->p;
+				p->digit = temp->digit;
+				p->type = temp->type;
+				p->remark = temp->remark;
 			}
 			st.push(p);
 			break;

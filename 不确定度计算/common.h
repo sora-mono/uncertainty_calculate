@@ -8,9 +8,9 @@ using namespace std;
 struct node
 {
 	int type;
-	enum { OPERATOR, DIGIT, OPERATION, OPERATION_NODELETE };
+	enum { OPERATOR, DIGIT, OPERATION, OPERATION_NODELETE, DIGIT_NODELETE };
 	string remark;
-	long double digit;
+	long double digit = 0;
 	operation* p = nullptr;
 };
 
