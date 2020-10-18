@@ -62,16 +62,21 @@ void delete_node(node*& p)
 	p = nullptr;
 }
 
-//void show()
-//{
-//	for (int i = 0; i < variables_size; i++)
-//	{
-//		if (variables[i]->)
-//		{
-//
-//		}
-//	}
-//}
+void show()
+{
+	for (int i = 0; i < variables_size; i++)
+	{
+		node* temp = variables[i];
+		if (temp != nullptr && (temp->type == temp->DIGIT || temp->type == temp->DIGIT_NODELETE))
+		{
+			cout << temp->remark << " : " << temp->digit << endl;
+		}
+		else if (temp != nullptr)
+		{
+			cout << temp->remark << " : " << *temp->p;
+		}
+	}
+}
 
 void help()
 {
@@ -98,6 +103,11 @@ node* analysis_input()
 	node* p = nullptr;
 	cout << "请输入表达式" << endl << ">";
 	getline(cin, str);
+	while (str == "")
+	{
+		cout << ">";
+		getline(cin, str);
+	}
 	if (str == "h" | str == "help" || str == "帮助")
 	{
 		help();
@@ -108,11 +118,11 @@ node* analysis_input()
 		clear_object_space();
 		return nullptr;
 	}
-	//if (str == "show")
-	//{
-	//	show();
-	//	return nullptr;
-	//}
+	if (str == "show")
+	{
+		show();
+		return nullptr;
+	}
 	size_t index;
 	while ((index = str.find(' ')) != string::npos)		//去除空格
 	{
@@ -150,13 +160,13 @@ node* analysis_input()
 				delete_node(get_object_space(str[0]));
 				get_object_space(str[0]) = p;	//给对应存储位置赋值
 				cout << str[0] << " : ";
-				if (p->type == p->DIGIT||p->type == p->DIGIT_NODELETE)
+				if (p->type == p->DIGIT || p->type == p->DIGIT_NODELETE)
 				{
 					cout << p->digit << endl;
 				}
 				else
 				{
-					cout <<endl<< *p->p << endl;
+					cout << endl << *p->p << endl;
 				}
 			}
 			else
@@ -164,7 +174,7 @@ node* analysis_input()
 				p = new node;
 				p->type = p->DIGIT_NODELETE;
 				char c;
-				sscanf_s(str.c_str(), "%c=%lf", &c,1, &p->digit);
+				sscanf_s(str.c_str(), "%c=%lf", &c, 1, &p->digit);
 				p->remark = c;
 				get_object_space(c) = p;
 				cout << c << " : " << p->digit << endl;
@@ -172,17 +182,17 @@ node* analysis_input()
 		}
 		else	//没有赋值操作
 		{
-				input_analysis analysis_obj(str);
-				p = analysis_obj.calculate_reserve_polish_expression();
-				cout << "结果：";
-				if (p->type == p->DIGIT || p->type == p->DIGIT_NODELETE)
-				{
-					cout << p->digit << endl;
-				}
-				else
-				{
-					cout <<endl<< *p->p << endl;
-				}
+			input_analysis analysis_obj(str);
+			p = analysis_obj.calculate_reserve_polish_expression();
+			cout << "结果：";
+			if (p->type == p->DIGIT || p->type == p->DIGIT_NODELETE)
+			{
+				cout << p->digit << endl;
+			}
+			else
+			{
+				cout << endl << *p->p << endl;
+			}
 		}
 	}
 	else	//有'|'，是赋值式
@@ -206,7 +216,7 @@ node* analysis_input()
 		else	//给一串数字计算不确定度
 		{
 			char c;
-			long effective_digits,fin;
+			long effective_digits, fin;
 			long double temp_long_double, uncertain_measurement_calculated, uncertain_instrument, real;
 			c = str[0];
 			sscanf_s(str.c_str(), "%*[^|]|%lf", &uncertain_instrument);

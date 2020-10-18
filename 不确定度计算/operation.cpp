@@ -100,11 +100,11 @@ operation operation::operator^(const long double k)const
 {
 	reality temp_reality = reality(-99, pow(realpart.get_real(), k));
 	long double uncertain_fin = uncertainpart.get_uncertain_fin() * pow(long double(10), uncertainpart.get_uncertain_fin_digits_for_pow());
-	uncertain_fin = uncertain_fin * k;
+	uncertain_fin = uncertain_fin * k * temp_reality.get_real()/realpart.get_real();
 	uncertain temp_uncertain = uncertain(-1, -1, uncertain_fin);
 	return operation(temp_reality, temp_uncertain);
 }
- 
+
 operation operator*(const long double k, const operation& node)
 {
 	return node.operator*(k);
